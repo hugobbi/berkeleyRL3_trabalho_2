@@ -31,11 +31,11 @@ class ValueIterationAgent(ValueEstimationAgent):
           and then act according to the resulting policy.
 
           Some useful mdp methods you will use:
-              mdp.getStates()
-              mdp.getPossibleActions(state)
-              mdp.getTransitionStatesAndProbs(state, action)
-              mdp.getReward(state, action, nextState)
-              mdp.isTerminal(state)
+              mdp.getStates() ok
+              mdp.getPossibleActions(state) ok
+              mdp.getTransitionStatesAndProbs(state, action) ok
+              mdp.getReward(state, action, nextState) ok
+              mdp.isTerminal(state) ok
         """
         self.mdp = mdp
         self.discount = discount
@@ -44,6 +44,13 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        # inicializando vetor de Valores
+        for state in self.mdp.getStates():
+            self.values[state] = 0
+        
+        for _ in range(self.iterations):
+            for state in self.mdp.getStates():
+                self.values[state] = self.mdp.getReward(state, None, None) + self.getQValue(state, self.getAction(state))
 
 
     def getValue(self, state):
@@ -59,10 +66,10 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         "*** YOUR CODE HERE ***"
         q_value = 0
-        next_state_and_probs = self.mdp.getTransitionStatesAndProbs(state, action)
-        for next_state, prob in next_state_and_probs:
-            q_value += prob*self.discount*self.values[next_state]
-
+        if action is not None:
+            next_state_and_probs = self.mdp.getTransitionStatesAndProbs(state, action)
+            for next_state, prob in next_state_and_probs:
+                q_value += prob*self.discount*self.values[next_state]
         return q_value
 
 
@@ -76,10 +83,17 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        if mdp.isTerminal(state): # se estado é terminal, retornar None
+        if self.mdp.isTerminal(state): # se estado é terminal, retornar None
             return None
         else:
-            return None
+            possible_actions = self.mdp.getPossibleActions(state)
+            possible_q_values = []
+            for action in possible_actions:
+                possible_q_values.append(self.getQValue(state, action))
+            best_action_index = possible_q_values.index(max(possible_q_values))
+            
+            return possible_actions[best_action_index]
+
         
 
     def getPolicy(self, state):
