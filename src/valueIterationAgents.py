@@ -45,13 +45,8 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
         # inicializando vetor de Valores
-        for state in self.mdp.getStates():
-            self.values[state] = 0
-        
-        for _ in range(self.iterations):
-            for state in self.mdp.getStates():
-                self.values[state] = self.mdp.getReward(state, None, None) + self.getQValue(state, self.getAction(state))
-
+        self.initializeValues()
+        self.valueIteration()
 
     def getValue(self, state):
         """
@@ -66,10 +61,10 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         "*** YOUR CODE HERE ***"
         q_value = 0
-        if action is not None:
-            next_state_and_probs = self.mdp.getTransitionStatesAndProbs(state, action)
-            for next_state, prob in next_state_and_probs:
-                q_value += prob*self.discount*self.values[next_state]
+        #print(f"{state=} {action=}")
+        next_state_and_probs = self.mdp.getTransitionStatesAndProbs(state, action)
+        for next_state, prob in next_state_and_probs:
+            q_value += prob*self.discount*self.values[next_state]
         return q_value
 
 
@@ -105,3 +100,17 @@ class ValueIterationAgent(ValueEstimationAgent):
 
     def getQValue(self, state, action):
         return self.computeQValueFromValues(state, action)
+    
+    def initializeValues(self):
+        self.values = {state: 0 for state in self.mdp.getStates()}
+        return 
+    
+    def valueIteration(self):
+        for _ in range(self.iterations):
+            new_values = self.values.copy()
+            for state in self.mdp.getStates():
+                if not self.mdp.isTerminal(state):
+                    new_values[state] = self.mdp.getReward(state, None, None) + self.getQValue(state, self.getAction(state))
+
+            self.values = new_values.copy()
+        return
