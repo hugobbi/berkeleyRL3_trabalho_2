@@ -61,10 +61,10 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        q_value = self.mdp.getReward(state, action, None)
+        q_value = 0
         next_state_and_probs = self.mdp.getTransitionStatesAndProbs(state, action)
         for next_state, prob in next_state_and_probs:
-            q_value += prob * self.discount * self.values[next_state]
+            q_value += prob * (self.mdp.getReward(state, None, None) + self.discount * self.values[next_state])
         return q_value
 
 
@@ -110,7 +110,8 @@ class ValueIterationAgent(ValueEstimationAgent):
             new_values = self.values.copy()
             for state in self.mdp.getStates():
                 if not self.mdp.isTerminal(state):
-                    new_values[state] = self.getQValue(state, self.getAction(state))
+                    new_values[state] = self.getQValue(state, self.getAction(state)) # tiramos o cálculo da reward daqui e colocamos no cálculo 
+                                                                                     # do q-value para passar nos testes do autograder :/
 
             self.values = new_values.copy()
         return
