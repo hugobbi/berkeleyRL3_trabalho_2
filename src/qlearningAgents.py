@@ -120,7 +120,10 @@ class QLearningAgent(ReinforcementAgent):
         if len(legalActions) == 0: # se não há ações legais, retornar None (action)
             return action
         else:
-            action = self.computeActionFromQValues(state) # ainda sem epsilon greedy
+            if util.flipCoin(self.epsilon):
+                action = random.choice(legalActions)
+            else:
+                action = self.computeActionFromQValues(state)
         return action
 
     def update(self, state, action, nextState, reward):
