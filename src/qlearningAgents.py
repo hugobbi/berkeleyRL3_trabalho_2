@@ -206,10 +206,9 @@ class ApproximateQAgent(PacmanQAgent):
         "*** YOUR CODE HERE ***"
         weights = self.getWeights()
         features = self.featExtractor.getFeatures(state, action)
-        n = len(features)
         q_value = 0
-        for i in range(n):
-            q_value += weights[i] * features[i]
+        for feature in features:
+            q_value += weights[feature] * features[state, action]
         return q_value
 
     def update(self, state, action, nextState, reward):
@@ -221,8 +220,8 @@ class ApproximateQAgent(PacmanQAgent):
         weights = self.getWeights()
         new_weights = weights.copy()
         features = self.featExtractor.getFeatures(state, action)
-        for i in range(len(weights)):
-            new_weights[i] = weights[i] + self.alpha * sigma * features[i]
+        for feature in features:
+            new_weights[feature] = weights[feature] + self.alpha * sigma * features[(state, action)]
         self.weights = new_weights.copy()
 
     def final(self, state):
